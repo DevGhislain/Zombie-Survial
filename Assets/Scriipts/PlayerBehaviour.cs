@@ -55,16 +55,14 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
-            float targetAngle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg + playerCamera.eulerAngles.y;
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + playerCamera.eulerAngles.z;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnCalmVelocity, turnCalmTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
-
-            Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            characterControler.Move(moveDirection.normalized * playerSpeed * Time.deltaTime);
+            characterControler.Move(direction.normalized * playerSpeed * Time.deltaTime);
         }
     }
 
     #endregion
 
-
 }
+
