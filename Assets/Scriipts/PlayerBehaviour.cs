@@ -6,26 +6,84 @@ public class PlayerBehaviour : MonoBehaviour
 {
     #region Private mambers
 
-    [Header("Player Mouvement")]
+    /// <summary>
+    /// Reference of the turn Calm Velocity
+    /// </summary>
     [SerializeField]
-    private float playerSpeed = 1.9f;
+    private float turnCalmVelocity = 0.1f;
+
+    /// <summary>
+    /// Reference of the jump Range
+    /// </summary>
+    [SerializeField]
+    private float jumpRange = 1.0f;
+
+    /// <summary>
+    /// Reference of the surface Check
+    /// </summary>
+    [SerializeField]
+    private Transform surfaceCheck;
+
+    /// <summary>
+    /// Reference of the check On surface
+    /// </summary>
+    [SerializeField]
+    private bool Onsurface;
+
+    /// <summary>
+    /// Reference of the gravity
+    /// </summary>
+    Vector3 velocity;
+
+    #endregion
+
+    #region Public Members
 
     [Header("Player script camera ")]
-    [SerializeField]
-    Transform playerCamera;
+
+    /// <summary>
+    /// Reference of the player Camera
+    /// </summary>
+    public Transform playerCamera;
+
+    [Header("Player Mouvement")]
+
+    /// <summary>
+    /// Reference of the player Speed
+    /// </summary>
+    public float playerSpeed = 1.9f;
 
     [Header("Player Animator and gravity")]
 
-    [SerializeField]
-    private CharacterController characterControler;
+
+    /// <summary>
+    /// Reference of the character Controler
+    /// </summary>
+    public CharacterController characterControler;
 
     [Header("Player Jumping and velocity")]
 
-    [SerializeField]
-    private float turnCalmTime = 0.1f;
+    /// <summary>
+    /// Reference of the gravity
+    /// </summary>
+    public float gravity = -9.81f;
 
-    [SerializeField]
-    private float turnCalmVelocity = 0.1f;
+   
+
+    /// <summary>
+    /// Reference of the surface Distance
+    /// </summary>
+    public float surfaceDistance = 0.4f;
+
+    /// <summary>
+    /// Reference of the turn Calm Time
+    /// </summary>
+    public float turnCalmTime = 0.1f;
+
+    /// <summary>
+    /// Reference of the surface Mask
+    /// </summary>
+    public LayerMask surfaceMask;
 
     #endregion
 
@@ -36,12 +94,21 @@ public class PlayerBehaviour : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        Onsurface = Physics.CheckSphere(surfaceCheck.position, surfaceDistance, surfaceMask);
+        if (Onsurface && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+        velocity.y += gravity * Time.deltaTime;
+
         PlayerMove();
+
+        Jump();
     }
 
      #endregion
 
-    #region methods
+    #region private Methods
 
     /// <summary>
     /// Methods for the pla;yer move
@@ -55,14 +122,27 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + playerCamera.eulerAngles.z;
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + playerCamera.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnCalmVelocity, turnCalmTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
-            characterControler.Move(direction.normalized * playerSpeed * Time.deltaTime);
+
+            Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            characterControler.Move(moveDirection.normalized * playerSpeed * Time.deltaTime);
+        }
+    }
+
+    /// <summary>
+    /// Method for the player jump
+    /// </summary>
+    void Jump()
+    {
+        if (Input.GetButtonDown("Jump") && Onsurface)
+        {
+            velocity.y = Mathf.Sqrt(jumpRange * -2 * gravity);
+            Debug.Log("Velocity is the " + velocity.y);
         }
     }
 
     #endregion
-
 }
 
