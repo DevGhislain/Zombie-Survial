@@ -100,6 +100,7 @@ public class PlayerBehaviour : MonoBehaviour
             velocity.y = -2f;
         }
         velocity.y += gravity * Time.deltaTime;
+        characterControler.Move(velocity * Time.deltaTime);
 
         PlayerMove();
 
@@ -139,7 +140,6 @@ public class PlayerBehaviour : MonoBehaviour
         if (Input.GetButtonDown("Jump") && Onsurface)
         {
             velocity.y = Mathf.Sqrt(jumpRange * -2 * gravity);
-            Debug.Log("Velocity is the " + velocity.y);
         }
     }
 
