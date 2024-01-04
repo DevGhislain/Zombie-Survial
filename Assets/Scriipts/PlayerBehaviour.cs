@@ -18,6 +18,7 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField]
     private float jumpRange = 1.0f;
 
+
     /// <summary>
     /// Reference of the surface Check
     /// </summary>
@@ -35,6 +36,22 @@ public class PlayerBehaviour : MonoBehaviour
     /// </summary>
     Vector3 velocity;
 
+
+    [Header("Player Mouvement")]
+
+    /// <summary>
+    /// Reference of the player Speed
+    /// </summary>
+    [SerializeField]
+    private float playerSpeed = 1.9f;
+
+
+    /// <summary>
+    /// Reference of the player Speed
+    /// </summary>
+    [SerializeField]
+    private float playerSprint = 3f;
+
     #endregion
 
     #region Public Members
@@ -46,29 +63,25 @@ public class PlayerBehaviour : MonoBehaviour
     /// </summary>
     public Transform playerCamera;
 
-    [Header("Player Mouvement")]
-
-    /// <summary>
-    /// Reference of the player Speed
-    /// </summary>
-    public float playerSpeed = 1.9f;
-
     [Header("Player Animator and gravity")]
-
 
     /// <summary>
     /// Reference of the character Controler
     /// </summary>
     public CharacterController characterControler;
 
-    [Header("Player Jumping and velocity")]
-
     /// <summary>
     /// Reference of the gravity
     /// </summary>
     public float gravity = -9.81f;
 
-   
+    /// <summary>
+    /// Reference of the Animator
+    /// </summary>
+    public Animator animator;
+
+    [Header("Player Jumping and velocity")]
+
 
     /// <summary>
     /// Reference of the surface Distance
@@ -104,7 +117,9 @@ public class PlayerBehaviour : MonoBehaviour
 
         PlayerMove();
 
-        Jump();
+        PlayerJump();
+
+        PlayerSprint();
     }
 
      #endregion
@@ -123,6 +138,13 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
+
+            animator.SetBool("Idle", false);
+            animator.SetBool("Walk", true);
+            animator.SetBool("Running", false);
+            animator.SetBool("RifleWalk", false);
+            animator.SetBool("IdleAim", false);
+
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + playerCamera.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnCalmVelocity, turnCalmTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
@@ -130,16 +152,62 @@ public class PlayerBehaviour : MonoBehaviour
             Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             characterControler.Move(moveDirection.normalized * playerSpeed * Time.deltaTime);
         }
+        else
+        {
+            animator.SetBool("Idle", true);
+            animator.SetBool("Walk", false);
+            animator.SetBool("Running", false);
+        }
     }
 
     /// <summary>
     /// Method for the player jump
     /// </summary>
-    void Jump()
+    void PlayerJump()
     {
         if (Input.GetButtonDown("Jump") && Onsurface)
         {
+            animator.SetBool("Idle", false);
+            animator.SetTrigger("Jump");
             velocity.y = Mathf.Sqrt(jumpRange * -2 * gravity);
+        }
+        else
+        {
+            animator.SetBool("Idle", true);
+            animator.ResetTrigger("jump");
+        }
+    }
+
+    /// <summary>
+    /// Method for the player sprint
+    /// </summary>
+    void PlayerSprint()
+    {
+        if (Input.GetButton("Sprint") && Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) && Onsurface)
+        {
+            float horiontal_axis = Input.GetAxisRaw("Horizontal");
+            float vertical_axis = Input.GetAxisRaw("Vertical");
+
+            Vector3 direction = new Vector3(horiontal_axis, 0f, vertical_axis).normalized;
+
+            if (direction.magnitude >= 0.1f)
+            {
+
+                animator.SetBool("Walk", false);
+                animator.SetBool("Running", true);
+
+                float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + playerCamera.eulerAngles.y;
+                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnCalmVelocity, turnCalmTime);
+                transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+                Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+                characterControler.Move(moveDirection.normalized * playerSprint * Time.deltaTime);;
+            }
+            else
+            {
+                animator.SetBool("Walk", true);
+                animator.SetBool("Running", false);
+            }
         }
     }
 
