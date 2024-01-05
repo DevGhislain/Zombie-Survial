@@ -18,7 +18,6 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField]
     private float jumpRange = 1.0f;
 
-
     /// <summary>
     /// Reference of the surface Check
     /// </summary>
@@ -36,7 +35,6 @@ public class PlayerBehaviour : MonoBehaviour
     /// </summary>
     Vector3 velocity;
 
-
     [Header("Player Mouvement")]
 
     /// <summary>
@@ -44,7 +42,6 @@ public class PlayerBehaviour : MonoBehaviour
     /// </summary>
     [SerializeField]
     private float playerSpeed = 1.9f;
-
 
     /// <summary>
     /// Reference of the player Speed
@@ -81,7 +78,6 @@ public class PlayerBehaviour : MonoBehaviour
     public Animator animator;
 
     [Header("Player Jumping and velocity")]
-
 
     /// <summary>
     /// Reference of the surface Distance
@@ -127,7 +123,7 @@ public class PlayerBehaviour : MonoBehaviour
     #region private Methods
 
     /// <summary>
-    /// Methods for the pla;yer move
+    /// Methods for the player move
     /// </summary>
     void PlayerMove()
     {
@@ -174,7 +170,7 @@ public class PlayerBehaviour : MonoBehaviour
         else
         {
             animator.SetBool("Idle", true);
-            animator.ResetTrigger("jump");
+            animator.ResetTrigger("Jump");
         }
     }
 
@@ -192,7 +188,6 @@ public class PlayerBehaviour : MonoBehaviour
 
             if (direction.magnitude >= 0.1f)
             {
-
                 animator.SetBool("Walk", false);
                 animator.SetBool("Running", true);
 
