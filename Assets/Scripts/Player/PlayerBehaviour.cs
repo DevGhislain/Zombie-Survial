@@ -99,6 +99,14 @@ public class PlayerBehaviour : MonoBehaviour
     #region Unity Methods
 
     /// <summary>
+    /// Unity methods Start 
+    /// </summary>
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    /// <summary>
     ///  Unity methods Update 
     /// </summary>
     private void Update()
