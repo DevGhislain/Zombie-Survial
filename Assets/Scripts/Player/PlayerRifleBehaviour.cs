@@ -24,7 +24,7 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// Reference for the shooting
     /// </summary>
     [SerializeField]
-    private float shootingRange= 100f;
+    private float shootingRange = 100f;
 
     /// <summary>
     /// Reference for the fire Charge
@@ -37,6 +37,12 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// </summary>
     [SerializeField]
     private float nextTimeToShoot = 0f;
+
+    /// <summary>
+    /// Reference for the Hand player
+    /// </summary>
+    [SerializeField]
+    private Transform handPlayer;
 
     [Header("Rifle Ammunition and shooting")]
 
@@ -63,6 +69,12 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// </summary>
     [SerializeField]
     private bool setReloading = false;
+
+    /// <summary>
+    /// Reference for the player script
+    /// </summary>
+    [SerializeField]
+    private PlayerBehaviour player;
 
     #endregion
 
@@ -96,7 +108,8 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        
+        transform.SetParent(handPlayer);
+        presentAmmunition = maximunAmmmnution;
     }
 
     /// <summary>
@@ -104,9 +117,12 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (setReloading)
+            return;
+
         if (Input.GetButton("Fire1") && Time.time >= nextTimeToShoot)
         {
-            nextTimeToShoot += Time.time + 1f/ fireCharge;
+            nextTimeToShoot = Time.time + 1f/fireCharge;
             Shoot();
         }
     }
@@ -120,6 +136,27 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// </summary>
     void Shoot()
     {
+        //check for mag
+        if (mag == 0)
+        {
+            //show the text
+            return;
+        }
+
+        presentAmmunition--;
+
+        if (presentAmmunition == 0)
+        {
+            mag--;
+        }
+
+        if (presentAmmunition <= 0)
+        {
+            StartCoroutine(Reload());
+        }
+
+        // Update the UI
+
         muzzLeSpark.Play();
 
         RaycastHit raycastHitInfo;
@@ -135,6 +172,24 @@ public class PlayerRifleBehaviour : MonoBehaviour
                 Destroy(woodGo, 1f);
             }
         }
+    }
+
+
+    IEnumerator Reload()
+    {
+        player.playerSpeed = 0;
+        player.playerSprint = 0;
+        setReloading = true;
+
+        // animation
+        //play a reload song
+        yield return new WaitForSeconds(reloadingTime);
+
+        // play the anim
+        presentAmmunition = maximunAmmmnution;
+        player.playerSpeed = 1.9f;
+        player.playerSprint = 3f;
+        setReloading = false;
     }
 
     #endregion
