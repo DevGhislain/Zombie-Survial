@@ -26,9 +26,33 @@ public class PlayerRiflePickUpBeahviour : MonoBehaviour
     private PlayerBehaviour player;
 
     /// <summary>
+    /// Reference of the player Punch script
+    /// </summary>
+    [SerializeField]
+    private PlayerPunchBehaviour playerPunch;
+
+    /// <summary>
     /// Reference for the radios 
     /// </summary>
     private float radios = 2.5f;
+
+    /// <summary>
+    /// Reference of the Animator
+    /// </summary>
+    [SerializeField]
+    Animator animator;
+
+    /// <summary>
+    /// Reference of the next Time To Punch
+    /// </summary>
+    [SerializeField]
+    private float nextTimeToPunch = 0f;
+
+    /// <summary>
+    /// Reference of the punch Range
+    /// </summary>
+    [SerializeField]
+    private float punchRange = 15f;
 
     #endregion
 
@@ -47,6 +71,21 @@ public class PlayerRiflePickUpBeahviour : MonoBehaviour
     /// </summary>
     private void Update()
     {
+
+        if (Input.GetButtonDown("Fire1") && Time.time >= nextTimeToPunch)
+        {
+            nextTimeToPunch = Time.time + 1f / punchRange;
+
+            animator.SetBool("Idle", false);
+            animator.SetBool("Punch", true);
+            playerPunch.Punch();
+          
+        }
+        else
+        {
+            animator.SetBool("Idle", true);
+            animator.SetBool("Punch", false);
+        }
         if (Vector3.Distance(transform.position, player.transform.position) < radios)
         {
             if (Input.GetKeyDown("f"))

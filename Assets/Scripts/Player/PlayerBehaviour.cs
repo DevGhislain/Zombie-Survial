@@ -142,7 +142,6 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
-
             animator.SetBool("Idle", false);
             animator.SetBool("Walk", true);
             animator.SetBool("Running", false);

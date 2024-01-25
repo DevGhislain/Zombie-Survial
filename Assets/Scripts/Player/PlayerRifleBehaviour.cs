@@ -76,6 +76,11 @@ public class PlayerRifleBehaviour : MonoBehaviour
     [SerializeField]
     private PlayerBehaviour player;
 
+    /// <summary>
+    /// Reference of the Animator
+    /// </summary>
+    public Animator animator;
+
     #endregion
 
     #region Public Members
@@ -95,7 +100,7 @@ public class PlayerRifleBehaviour : MonoBehaviour
     [Header("Rifle Ammunition and shooting")]
 
     /// <summary>
-    /// Reference to the mag
+    /// Reference to the cartouche mag
     /// </summary>
     public int mag = 10;
 
@@ -122,8 +127,30 @@ public class PlayerRifleBehaviour : MonoBehaviour
 
         if (Input.GetButton("Fire1") && Time.time >= nextTimeToShoot)
         {
+            animator.SetBool("Fire", true);
+            animator.SetBool("Idle", false);
+          
             nextTimeToShoot = Time.time + 1f/fireCharge;
             Shoot();
+        }
+        else if (Input.GetButton("Fire1") && Input.GetKey(KeyCode.W)|| Input.GetKey(KeyCode.UpArrow))
+        {
+            animator.SetBool("Idle", false);
+            animator.SetBool("FireWalk", true);
+        }
+        else if ((Input.GetButton("Fire2") && Input.GetButton("Fire1")))
+        {
+            animator.SetBool("Idle", false);
+            animator.SetBool("IdleAim", true);
+            animator.SetBool("FireWalk", true);
+            animator.SetBool("Walk", true);
+            animator.SetBool("Reloading", false);
+        }
+        else
+        {
+            animator.SetBool("Idle", true);
+            animator.SetBool("Fire", false);
+            animator.SetBool("FireWalk", false);
         }
     }
 
@@ -182,9 +209,12 @@ public class PlayerRifleBehaviour : MonoBehaviour
         setReloading = true;
 
         // animation
-        //play a reload song
+        animator.SetBool("Reloading", true);
+
         yield return new WaitForSeconds(reloadingTime);
 
+        // animation
+        animator.SetBool("Reloading", false);
         // play the anim
         presentAmmunition = maximunAmmmnution;
         player.playerSpeed = 1.9f;
