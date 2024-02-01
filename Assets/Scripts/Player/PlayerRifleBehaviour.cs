@@ -102,7 +102,7 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// <summary>
     /// Reference to the cartouche mag
     /// </summary>
-    public int mag = 10;
+    public int cartridge = 10;
 
     #endregion
 
@@ -129,11 +129,11 @@ public class PlayerRifleBehaviour : MonoBehaviour
         {
             animator.SetBool("Fire", true);
             animator.SetBool("Idle", false);
-          
-            nextTimeToShoot = Time.time + 1f/fireCharge;
+
+            nextTimeToShoot = Time.time + 1f / fireCharge;
             Shoot();
         }
-        else if (Input.GetButton("Fire1") && Input.GetKey(KeyCode.W)|| Input.GetKey(KeyCode.UpArrow))
+        else if (Input.GetButton("Fire1") && Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
             animator.SetBool("Idle", false);
             animator.SetBool("FireWalk", true);
@@ -142,7 +142,7 @@ public class PlayerRifleBehaviour : MonoBehaviour
         {
             animator.SetBool("Idle", false);
             animator.SetBool("IdleAim", true);
-            animator.SetBool("FireWalk", true);
+            animator.SetBool("RifleWalk", true);
             animator.SetBool("Walk", true);
             animator.SetBool("Reloading", false);
         }
@@ -164,7 +164,7 @@ public class PlayerRifleBehaviour : MonoBehaviour
     void Shoot()
     {
         //check for mag
-        if (mag == 0)
+        if (cartridge == 0)
         {
             //show the text
             return;
@@ -174,10 +174,10 @@ public class PlayerRifleBehaviour : MonoBehaviour
 
         if (presentAmmunition == 0)
         {
-            mag--;
+            cartridge--;
         }
 
-        if (presentAmmunition <= 0)
+        if (presentAmmunition == 0)
         {
             StartCoroutine(Reload());
         }
@@ -201,7 +201,10 @@ public class PlayerRifleBehaviour : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// IEnumarator for the reload the cartridge
+    /// </summary>
+    /// <returns></returns>
     IEnumerator Reload()
     {
         player.playerSpeed = 0;
@@ -215,10 +218,9 @@ public class PlayerRifleBehaviour : MonoBehaviour
 
         // animation
         animator.SetBool("Reloading", false);
-        // play the anim
         presentAmmunition = maximunAmmmnution;
-        player.playerSpeed = 1.9f;
-        player.playerSprint = 3f;
+        player.playerSpeed = 1.6f;
+        player.playerSprint = 2f;
         setReloading = false;
     }
 
