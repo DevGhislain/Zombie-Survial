@@ -76,10 +76,7 @@ public class PlayerRiflePickUpBeahviour : MonoBehaviour
         {
             nextTimeToPunch = Time.time + 1f / punchRange;
 
-            animator.SetBool("Idle", false);
-            animator.SetBool("Punch", true);
-            playerPunch.Punch();
-          
+            StartCoroutine("loadPunch");
         }
         else
         {
@@ -94,6 +91,22 @@ public class PlayerRiflePickUpBeahviour : MonoBehaviour
                 pickupRifle.SetActive(false);
             }
         }   
+    }
+
+    #endregion
+
+    #region Private methods
+
+    /// <summary>
+    /// IEnumarator for the load the punch animation
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator loadPunch()
+    {
+        animator.SetBool("Idle", false);
+        animator.SetBool("Punch", true);
+        yield return new WaitForSeconds(0.5f);
+         playerPunch.Punch();
     }
 
     #endregion

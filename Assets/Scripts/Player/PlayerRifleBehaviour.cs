@@ -127,11 +127,8 @@ public class PlayerRifleBehaviour : MonoBehaviour
 
         if (Input.GetButton("Fire1") && Time.time >= nextTimeToShoot)
         {
-            animator.SetBool("Fire", true);
-            animator.SetBool("Idle", false);
-
             nextTimeToShoot = Time.time + 1f / fireCharge;
-            Shoot();
+            StartCoroutine("loadShoot");
         }
         else if (Input.GetButton("Fire1") && Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
         {
@@ -222,6 +219,19 @@ public class PlayerRifleBehaviour : MonoBehaviour
         player.playerSpeed = 1.6f;
         player.playerSprint = 2f;
         setReloading = false;
+    }
+
+
+    /// <summary>
+    /// IEnumarator for the load the punch animation
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator loadShoot()
+    {
+        animator.SetBool("Fire", true);
+        animator.SetBool("Idle", false);
+        yield return new WaitForSeconds(0.5f);
+        Shoot();
     }
 
     #endregion

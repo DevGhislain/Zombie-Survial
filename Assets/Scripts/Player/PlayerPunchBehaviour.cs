@@ -24,6 +24,11 @@ public class PlayerPunchBehaviour : MonoBehaviour
     [SerializeField]
     private float punchRange = 5f;
 
+    /// <summary>
+    /// Reference of the RaycastHit
+    /// </summary>
+    RaycastHit raycastHitInfo;
+
     #endregion
 
     #region Public region 
@@ -46,13 +51,13 @@ public class PlayerPunchBehaviour : MonoBehaviour
 
         if (Physics.Raycast(camera.transform.position, camera.transform.forward, out raycastHitInfo, punchRange))
         {
-            Debug.Log(raycastHitInfo.transform.name);
             ObjectToHitBehaviour objectToHitBehaviour = raycastHitInfo.transform.GetComponent<ObjectToHitBehaviour>();
+
             if (objectToHitBehaviour != null)
             {
                 objectToHitBehaviour.ObjectHitDamage(giveDamage);
                 GameObject woodGo = Instantiate(woodeffect, raycastHitInfo.point, Quaternion.LookRotation(raycastHitInfo.normal));
-                Destroy(woodGo, 1f);
+                Destroy(woodGo, 2f);
             }
         }
     }
