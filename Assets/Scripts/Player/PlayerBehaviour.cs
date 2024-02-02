@@ -35,23 +35,21 @@ public class PlayerBehaviour : MonoBehaviour
     /// </summary>
     Vector3 velocity;
 
+    #endregion
+
+    #region Public Members
+
     [Header("Player Mouvement")]
 
     /// <summary>
     /// Reference of the player Speed
     /// </summary>
-    [SerializeField]
-    private float playerSpeed = 1.9f;
+    public float playerSpeed = 1.9f;
 
     /// <summary>
     /// Reference of the player Speed
     /// </summary>
-    [SerializeField]
-    private float playerSprint = 3f;
-
-    #endregion
-
-    #region Public Members
+    public float playerSprint = 3f;
 
     [Header("Player script camera ")]
 
@@ -112,10 +110,12 @@ public class PlayerBehaviour : MonoBehaviour
     private void Update()
     {
         Onsurface = Physics.CheckSphere(surfaceCheck.position, surfaceDistance, surfaceMask);
+
         if (Onsurface && velocity.y < 0)
         {
             velocity.y = -2f;
         }
+
         velocity.y += gravity * Time.deltaTime;
         characterControler.Move(velocity * Time.deltaTime);
 
@@ -142,7 +142,6 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
-
             animator.SetBool("Idle", false);
             animator.SetBool("Walk", true);
             animator.SetBool("Running", false);

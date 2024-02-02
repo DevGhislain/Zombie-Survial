@@ -24,7 +24,7 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// Reference for the shooting
     /// </summary>
     [SerializeField]
-    private float shootingRange= 100f;
+    private float shootingRange = 100f;
 
     /// <summary>
     /// Reference for the fire Charge
@@ -37,6 +37,12 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// </summary>
     [SerializeField]
     private float nextTimeToShoot = 0f;
+
+    /// <summary>
+    /// Reference for the Hand player
+    /// </summary>
+    [SerializeField]
+    private Transform handPlayer;
 
     [Header("Rifle Ammunition and shooting")]
 
@@ -64,6 +70,17 @@ public class PlayerRifleBehaviour : MonoBehaviour
     [SerializeField]
     private bool setReloading = false;
 
+    /// <summary>
+    /// Reference for the player script
+    /// </summary>
+    [SerializeField]
+    private PlayerBehaviour player;
+
+    /// <summary>
+    /// Reference of the Animator
+    /// </summary>
+    public Animator animator;
+
     #endregion
 
     #region Public Members
@@ -83,9 +100,9 @@ public class PlayerRifleBehaviour : MonoBehaviour
     [Header("Rifle Ammunition and shooting")]
 
     /// <summary>
-    /// Reference to the mag
+    /// Reference to the cartouche mag
     /// </summary>
-    public int mag = 10;
+    public int cartridge = 10;
 
     #endregion
 
@@ -96,7 +113,8 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        
+        transform.SetParent(handPlayer);
+        presentAmmunition = maximunAmmmnution;
     }
 
     /// <summary>
@@ -104,10 +122,35 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (setReloading)
+            return;
+
         if (Input.GetButton("Fire1") && Time.time >= nextTimeToShoot)
         {
-            nextTimeToShoot += Time.time + 1f/ fireCharge;
+            animator.SetBool("Fire", true);
+            animator.SetBool("Idle", false);
+
+            nextTimeToShoot = Time.time + 1f / fireCharge;
             Shoot();
+        }
+        else if (Input.GetButton("Fire1") && Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+        {
+            animator.SetBool("Idle", false);
+            animator.SetBool("FireWalk", true);
+        }
+        else if ((Input.GetButton("Fire2") && Input.GetButton("Fire1")))
+        {
+            animator.SetBool("Idle", false);
+            animator.SetBool("IdleAim", true);
+            animator.SetBool("RifleWalk", true);
+            animator.SetBool("Walk", true);
+            animator.SetBool("Reloading", false);
+        }
+        else
+        {
+            animator.SetBool("Idle", true);
+            animator.SetBool("Fire", false);
+            animator.SetBool("FireWalk", false);
         }
     }
 
@@ -120,6 +163,27 @@ public class PlayerRifleBehaviour : MonoBehaviour
     /// </summary>
     void Shoot()
     {
+        //check for mag
+        if (cartridge == 0)
+        {
+            //show the text
+            return;
+        }
+
+        presentAmmunition--;
+
+        if (presentAmmunition == 0)
+        {
+            cartridge--;
+        }
+
+        if (presentAmmunition == 0)
+        {
+            StartCoroutine(Reload());
+        }
+
+        // Update the UI
+
         muzzLeSpark.Play();
 
         RaycastHit raycastHitInfo;
@@ -135,6 +199,29 @@ public class PlayerRifleBehaviour : MonoBehaviour
                 Destroy(woodGo, 1f);
             }
         }
+    }
+
+    /// <summary>
+    /// IEnumarator for the reload the cartridge
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator Reload()
+    {
+        player.playerSpeed = 0;
+        player.playerSprint = 0;
+        setReloading = true;
+
+        // animation
+        animator.SetBool("Reloading", true);
+
+        yield return new WaitForSeconds(reloadingTime);
+
+        // animation
+        animator.SetBool("Reloading", false);
+        presentAmmunition = maximunAmmmnution;
+        player.playerSpeed = 1.6f;
+        player.playerSprint = 2f;
+        setReloading = false;
     }
 
     #endregion

@@ -32,6 +32,13 @@ public class PlayerSwitchCamera : MonoBehaviour
     [SerializeField]
     private GameObject AimCanvas;
 
+
+    /// <summary>
+    /// Reference of the Animator
+    /// </summary>
+    [SerializeField]
+    private Animator animator;
+
     #endregion
 
     #region Unity Mathods
@@ -41,8 +48,25 @@ public class PlayerSwitchCamera : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if (Input.GetButton("Fire2"))
+        if (Input.GetButton("Fire2") && Input.GetKey(KeyCode.W)|| Input.GetKey(KeyCode.UpArrow))
         {
+            animator.SetBool("Idle", false);
+            animator.SetBool("IdleAim", true);
+            animator.SetBool("RifleWalk", false);
+            animator.SetBool("Walk", true);
+
+            ThirdPersonCineMachine.SetActive(false);
+            TPCanvas.SetActive(false);
+            AimCineMachine.SetActive(true);
+            AimCanvas.SetActive(true);
+        }
+        else if (Input.GetButton("Fire2"))
+        {
+            animator.SetBool("Idle", false);
+            animator.SetBool("IdleAim", true);
+            animator.SetBool("RifleWalk", false);
+            animator.SetBool("Walk", false);
+
             ThirdPersonCineMachine.SetActive(false);
             TPCanvas.SetActive(false);
             AimCineMachine.SetActive(true);
@@ -50,6 +74,10 @@ public class PlayerSwitchCamera : MonoBehaviour
         }
         else
         {
+            animator.SetBool("Idle", true);
+            animator.SetBool("IdleAim", false);
+            animator.SetBool("RifleWalk", false);
+
             ThirdPersonCineMachine.SetActive(true);
             TPCanvas.SetActive(true);
             AimCineMachine.SetActive(false);
